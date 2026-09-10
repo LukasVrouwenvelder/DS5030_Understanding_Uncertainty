@@ -1,0 +1,2222 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Spotify Lab: Vectors, Inner Products, and Similar Songs</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="lab_01_Local_files/libs/clipboard/clipboard.min.js"></script>
+<script src="lab_01_Local_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="lab_01_Local_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="lab_01_Local_files/libs/quarto-html/popper.min.js"></script>
+<script src="lab_01_Local_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="lab_01_Local_files/libs/quarto-html/anchor.min.js"></script>
+<link href="lab_01_Local_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="lab_01_Local_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="lab_01_Local_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="lab_01_Local_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="lab_01_Local_files/libs/bootstrap/bootstrap-917079515d91bccb85b543faf8aa8bb6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Spotify Lab: Vectors, Inner Products, and Similar Songs</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><strong>Name(s):</strong> Lukas Vrouwenvelder</p>
+<p>You are a new data engineer at Spotify.</p>
+<p>When a listener asks for songs with similar content, we want to query the library of music and select appropriate recommendations.</p>
+<p>Every song is represented as a vector, and we are using a <strong>vector database</strong>: Each song is encoded as a vector of word counts. So if “love” appears 12 times in the song, the “love” coordinate is <span class="math inline">\(x_{\text{love}}=12\)</span>. If Metallica writes songs about topics that are more similar to Black Sabbath than to Josh Groban, then the vector representations of their songs will have more similar profiles, and we should suggest Black Sabbath over Josh Groban. This approach is fundamental to technologies like LLMs or facial recognition, which store documents and faces as vectors and conducts fast look-ups using the kinds of math we’ll look at in this lab.</p>
+<p>The main data, <code>song_vectors.csv.gz</code>, include:</p>
+<ul>
+<li><code>track_id</code>, <code>song_id</code>, <code>artist_id</code>: Internal unique track identifiers</li>
+<li><code>artist_name</code>, <code>song_title</code>, <code>release</code>: Artist, song, album</li>
+<li><code>release_year</code>, <code>duration</code>: `</li>
+<li><code>artist_familiarity</code>, <code>artist_hotttnesss</code>: Measures of ubiquity, popularity</li>
+<li><code>genre</code>, <code>top_tags</code>: Information about the song type</li>
+<li><code>n_words</code>, <code>nnz_words</code>, <code>l2_norm</code>: Number of total words in the song, number of non-zero word coordinates (i.e.&nbsp;number of unique words), and the word counts squared/summed/square-rooted.</li>
+<li><code>is_test</code>: Train-test split identification</li>
+<li>800 columns of word counts</li>
+</ul>
+<p>The <code>top_40_songs_by_genre.csv</code> file contains the top 40 songs by genre – rock, metal, pop, punk, country, r&amp;b/soul, folk, hip hop, electronic, blues, jazz, reggae, latin, classical – by “hotttness”. We’ll use these songs to benchmark.</p>
+<p>The <code>vocabulary.csv</code> file includes the 800 words that form the vector space in which the songs are modeled.</p>
+<p>Each song becomes a vector of lyric-word counts, and then we use vector operations to quantify “similarity”.</p>
+<p>The big goal of this lab is simple:</p>
+<p><strong>Vectors and inner products and vector length are the core tools of modern retrieval systems.</strong></p>
+<section id="lab-overview-and-submission" class="level2">
+<h2 class="anchored" data-anchor-id="lab-overview-and-submission">Lab Overview and Submission</h2>
+<p><strong>Add your name to the top of this notebook and name anyone you worked closely with.</strong> Add this notebook to a personal GitHub repository and submit the repository link in Canvas. Every group member should be able to explain the code and conclusions in the submitted work.</p>
+<p>The goal of this lab is to use vectors and inner products to build, inspect, and critique a small song-recommendation system. You will represent songs using lyric word counts, compare several measures of similarity, and decide which measure produces the most useful recommendations.</p>
+<section id="part-1-basic-similarity-measures" class="level3">
+<h3 class="anchored" data-anchor-id="part-1-basic-similarity-measures">Part 1: Basic Similarity Measures</h3>
+<p>Complete the steps in this notebook. For each method, run the code, inspect the rankings and plots, and respond to the yellow prompts in your own words. Explain what the score measures, how the top matches change, and whether the method is rewarding genuine lyric similarity, song length, or some other pattern.</p>
+</section>
+<section id="part-2-recommendation-logic" class="level3">
+<h3 class="anchored" data-anchor-id="part-2-recommendation-logic">Part 2: Recommendation Logic</h3>
+<p>Use cosine similarity to build the final 10-song recommendation list after excluding the query song itself. Evaluate that choice against the dot-product ranking. Identify at least two specific songs that illustrate an important difference between the rankings, and explain what that difference reveals about the two scoring rules.</p>
+</section>
+<section id="short-written-explanation" class="level3">
+<h3 class="anchored" data-anchor-id="short-written-explanation">Short Written Explanation</h3>
+<p>At the end of this notebook, write a 2-4 paragraph response. State which similarity measure you would recommend Spotify use for this lyric-only prototype, justify your choice with results from your analysis, and discuss at least two concrete examples from the rankings. Briefly note one important limitation of lyric word counts alone and name information that could make a real recommendation system better.</p>
+<p>Your completed submission should include this notebook with all code executed, outputs visible, and written responses included.</p>
+</section>
+</section>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>We will use:</p>
+<ul>
+<li><code>./data/song_vectors.csv.gz</code>: one row per song</li>
+<li><code>./data/vocabulary.csv</code>: the word columns used in the song vectors</li>
+</ul>
+<div id="b69a84fc" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>songs <span class="op">=</span> pd.read_csv( <span class="st">"./data/song_vectors.csv.gz"</span> )</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>vocab <span class="op">=</span> pd.read_csv( <span class="st">"./data/vocabulary.csv"</span> )</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>top_40 <span class="op">=</span> pd.read_csv(<span class="st">"./data/top_40_songs_by_genre.csv"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>word_cols <span class="op">=</span> vocab[<span class="st">"word"</span>].tolist() <span class="co"># Song count matrix</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>meta_cols <span class="op">=</span> songs.columns.drop(word_cols).tolist() <span class="co"># Information about tracks</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Number of songs, number of words:'</span>, songs.shape)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>( <span class="st">'Song metadata fields:'</span>, meta_cols[:<span class="dv">8</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of songs, number of words: (8000, 816)
+Song metadata fields: ['track_id', 'song_id', 'artist_id', 'artist_name', 'song_title', 'release', 'release_year', 'duration']</code></pre>
+</div>
+</div>
+<div id="afce43ce" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>songs[meta_cols].head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">track_id</th>
+<th data-quarto-table-cell-role="th">song_id</th>
+<th data-quarto-table-cell-role="th">artist_id</th>
+<th data-quarto-table-cell-role="th">artist_name</th>
+<th data-quarto-table-cell-role="th">song_title</th>
+<th data-quarto-table-cell-role="th">release</th>
+<th data-quarto-table-cell-role="th">release_year</th>
+<th data-quarto-table-cell-role="th">duration</th>
+<th data-quarto-table-cell-role="th">artist_familiarity</th>
+<th data-quarto-table-cell-role="th">artist_hotttnesss</th>
+<th data-quarto-table-cell-role="th">genre</th>
+<th data-quarto-table-cell-role="th">top_tags</th>
+<th data-quarto-table-cell-role="th">n_words</th>
+<th data-quarto-table-cell-role="th">nnz_words</th>
+<th data-quarto-table-cell-role="th">l2_norm</th>
+<th data-quarto-table-cell-role="th">is_test</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>TRAAPIV128F1493132</td>
+<td>SOJHKYL12A6D4FA0AC</td>
+<td>AR56P361187B9AC4DB</td>
+<td>Gary Moore</td>
+<td>What Are We Here For</td>
+<td>Dark Days In Paradise</td>
+<td>1997</td>
+<td>345.93914</td>
+<td>0.761362</td>
+<td>0.467111</td>
+<td>blues</td>
+<td>blues; classic rock; rock; hard rock; blues rock</td>
+<td>218</td>
+<td>80</td>
+<td>37.376463</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>TRAAWOR128F92DF3C8</td>
+<td>SOBJYXZ12A8AE45FF1</td>
+<td>ARY80281187FB3E380</td>
+<td>Sandi Thom</td>
+<td>Wounded Hearts</td>
+<td>The Pink &amp; The Lily</td>
+<td>2008</td>
+<td>205.21751</td>
+<td>0.655359</td>
+<td>0.405031</td>
+<td>blues</td>
+<td>blues</td>
+<td>287</td>
+<td>103</td>
+<td>39.698866</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>TRABNZS128F932C6E8</td>
+<td>SOCOZZE12A813568F7</td>
+<td>AROWOZ41187FB5B535</td>
+<td>G. Love &amp; Special Sauce</td>
+<td>Willow Tree</td>
+<td>Yeah_ It's That Easy</td>
+<td>1997</td>
+<td>206.57587</td>
+<td>0.717235</td>
+<td>0.548694</td>
+<td>blues</td>
+<td>blues; chill; alternative; rock; jazz</td>
+<td>211</td>
+<td>64</td>
+<td>33.090784</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>TRABOIH128F9300B06</td>
+<td>SOHYOTB12AF72AA1D7</td>
+<td>AR94ZOI1187FB46BDA</td>
+<td>Willie Dixon</td>
+<td>That's My Baby</td>
+<td>Very Best Of The Blues</td>
+<td>1989</td>
+<td>208.90077</td>
+<td>0.579533</td>
+<td>0.429834</td>
+<td>blues</td>
+<td>delta blues; BLUEZZZ; blues; freedom; Willie D...</td>
+<td>164</td>
+<td>76</td>
+<td>27.477263</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>TRABYAR128F931B1A4</td>
+<td>SOVKUOE12A58A8066E</td>
+<td>AR7BMMV1187FB5B2D7</td>
+<td>Robben Ford</td>
+<td>Something For The Pain</td>
+<td>Blue Moon</td>
+<td>2002</td>
+<td>298.37016</td>
+<td>0.604820</td>
+<td>0.383877</td>
+<td>blues</td>
+<td>blues; Robben Ford; vinnie colaiuta; jimmy earl</td>
+<td>187</td>
+<td>75</td>
+<td>27.604347</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="part-1-similarity-measures-for-song-vectors" class="level2">
+<h2 class="anchored" data-anchor-id="part-1-similarity-measures-for-song-vectors">Part 1: Similarity Measures for Song Vectors</h2>
+<p>The word-count columns are coordinates. That means each song is a vector in a high-dimensional space.</p>
+<p>We will work with the song-by-word matrix <span class="math inline">\(X\)</span>, where each row is one song vector.</p>
+<div id="fe0e4449" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> songs[word_cols].to_numpy(dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>query_idx <span class="op">=</span> <span class="dv">0</span> <span class="co"># Let's query the first song</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> X[query_idx]</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>( <span class="st">'Track metadata: </span><span class="ch">\n</span><span class="st">'</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(songs.loc[query_idx, meta_cols])</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>( <span class="st">'Track word counts: </span><span class="ch">\n</span><span class="st">'</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>( query )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Track metadata: 
+
+track_id                                            TRAAPIV128F1493132
+song_id                                             SOJHKYL12A6D4FA0AC
+artist_id                                           AR56P361187B9AC4DB
+artist_name                                                 Gary Moore
+song_title                                        What Are We Here For
+release                                          Dark Days In Paradise
+release_year                                                      1997
+duration                                                     345.93914
+artist_familiarity                                            0.761362
+artist_hotttnesss                                             0.467111
+genre                                                            blues
+top_tags              blues; classic rock; rock; hard rock; blues rock
+n_words                                                            218
+nnz_words                                                           80
+l2_norm                                                      37.376463
+is_test                                                              0
+Name: 0, dtype: object
+Track word counts: 
+
+[ 0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  3.  0.  0.  0.  0.
+  0.  0.  0.  1.  1.  0.  0.  0.  2.  0.  0.  0.  0. 10.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  3.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  3.  0.
+  1.  0.  0.  1.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  1.  0.  0.  0.  1.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  2.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  1.  0.  0.  0.  0.  0.  1.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  1.  3.
+  0.  0.  0.  0.  0.  0.  1.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  9.  0.  0.  0.  0.  0.  0.
+  1.  0.  0.  0.  0.  0.  0.  0.  0.  0.  4.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  6.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  6.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  1.  0.  0.
+  0.  0.  1.  0.  0.  0.  0.  1.  0.  0.  2.  0.  6.  0.  0.  0.  0.  1.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  1.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  3.  0.  0.  0.  0.  0.  0.  1.  0.  0.  0.  1.  0.  0.
+  0.  0.  0.  0.  1.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  1.  0.  0.  0.  0.  0.  0.  2.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  1.  0.  0.  4.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  7.  0.  0.  0.  0.  1.  0.  0.  1.  0.  0.
+  4.  0.  0.  5.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  2.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  4.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  2.  0.  0.
+  1.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  1.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  1.  0.  0.  0.  0.  0.  0.  0.  0.  0.  2.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  4.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  1.  0.  0.  0.  1.  0.  0.  1.
+  0.  0.  0.  4.  0.  0.  0.  0.  0.  0.  5.  0.  0.  0.  0.  0.  0.  0.
+  1.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  2.
+  0.  1.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  2.  0.
+  4.  0.  0.  3.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.  0.  2. 27.  0.  0.  0.  0.  6.  0.  1.
+  0.  0.  0.  0.  0.  1.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  1.  0.  0.  0.  0.  0.  0.  0.  0.  2.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.  0.  0.  0.  0.]</code></pre>
+</div>
+</div>
+<div id="fd301e5f" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>X <span class="co">#this is the song count matrix, with each row representing a song and each column representing a word in the vocabulary. The values in the matrix indicate the count of each word in the corresponding song.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>array([[ 0.,  0.,  0., ...,  0.,  0.,  0.],
+       [ 0.,  0.,  0., ...,  0.,  0.,  0.],
+       [ 0.,  0.,  0., ..., 11.,  0.,  0.],
+       ...,
+       [ 0.,  0.,  0., ...,  0.,  0.,  0.],
+       [ 0.,  0.,  0., ...,  3.,  0.,  0.],
+       [ 0.,  0.,  0., ...,  2.,  0.,  0.]], shape=(8000, 800))</code></pre>
+</div>
+</div>
+<div id="20e8d07d" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's see the counts for nonzero words</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>nonzero <span class="op">=</span> np.flatnonzero(query)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"word"</span>: np.array(word_cols)[nonzero], <span class="co">#this line </span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"count"</span>: query[nonzero].astype(<span class="bu">int</span>),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>}).sort_values(<span class="st">"count"</span>, ascending<span class="op">=</span><span class="va">False</span>).head(<span class="dv">15</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">word</th>
+<th data-quarto-table-cell-role="th">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">62</th>
+<td>we</td>
+<td>27</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4</th>
+<td>are</td>
+<td>10</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">17</th>
+<td>for</td>
+<td>9</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">37</th>
+<td>of</td>
+<td>7</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">63</th>
+<td>what</td>
+<td>6</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">26</th>
+<td>it</td>
+<td>6</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">21</th>
+<td>here</td>
+<td>6</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">20</th>
+<td>have</td>
+<td>6</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">41</th>
+<td>our</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">54</th>
+<td>through</td>
+<td>5</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">49</th>
+<td>stay</td>
+<td>4</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">40</th>
+<td>or</td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">43</th>
+<td>right</td>
+<td>4</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>get</td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">36</th>
+<td>must</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="step-1-dot-product" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-dot-product">Step 1: Dot Product</h2>
+<p>The dot product is our first similarity score:</p>
+<p><span class="math display">\[
+x \cdot y = \sum_{j=1}^m x_j y_j
+\]</span></p>
+<p>It gets large when two songs align count mass on the same words.</p>
+<p>It also tends to go up for longer songs or songs with larger total counts, which is a choice we’ll have to think about.</p>
+<div id="7f61e5bd" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the dot product between every song vector and the query vector.</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>dot_scores <span class="op">=</span> X <span class="op">@</span> query</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>dot_results <span class="op">=</span> songs[meta_cols].copy()</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>dot_results[<span class="st">"dot"</span>] <span class="op">=</span> dot_scores</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>dot_results.sort_values(<span class="st">"dot"</span>, ascending<span class="op">=</span><span class="va">False</span>).head(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">track_id</th>
+<th data-quarto-table-cell-role="th">song_id</th>
+<th data-quarto-table-cell-role="th">artist_id</th>
+<th data-quarto-table-cell-role="th">artist_name</th>
+<th data-quarto-table-cell-role="th">song_title</th>
+<th data-quarto-table-cell-role="th">release</th>
+<th data-quarto-table-cell-role="th">release_year</th>
+<th data-quarto-table-cell-role="th">duration</th>
+<th data-quarto-table-cell-role="th">artist_familiarity</th>
+<th data-quarto-table-cell-role="th">artist_hotttnesss</th>
+<th data-quarto-table-cell-role="th">genre</th>
+<th data-quarto-table-cell-role="th">top_tags</th>
+<th data-quarto-table-cell-role="th">n_words</th>
+<th data-quarto-table-cell-role="th">nnz_words</th>
+<th data-quarto-table-cell-role="th">l2_norm</th>
+<th data-quarto-table-cell-role="th">is_test</th>
+<th data-quarto-table-cell-role="th">dot</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1582</th>
+<td>TRFSCLD12903CD213F</td>
+<td>SOENGNL12AB018E1BD</td>
+<td>AR4L4WQ1187FB51996</td>
+<td>The Prodigy</td>
+<td>We Gonna Rock</td>
+<td>What Evil Lurks</td>
+<td>1991</td>
+<td>282.30485</td>
+<td>0.638614</td>
+<td>0.601436</td>
+<td>electronic</td>
+<td>Rave; big beat; jungle; electronic; techno</td>
+<td>312</td>
+<td>10</td>
+<td>141.703917</td>
+<td>0</td>
+<td>2136.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">6290</th>
+<td>TRFUJVJ128F426F2A2</td>
+<td>SOONCPO12AF72A1986</td>
+<td>AR8W8P31187B9A4063</td>
+<td>Lauryn Hill</td>
+<td>Interlude 5</td>
+<td>MTV Unplugged No. 2.0</td>
+<td>2002</td>
+<td>734.48444</td>
+<td>0.697206</td>
+<td>0.580125</td>
+<td>r&amp;b/soul</td>
+<td>ms hill; the realness; The Truth; true; rnb</td>
+<td>1903</td>
+<td>409</td>
+<td>215.044182</td>
+<td>0</td>
+<td>2115.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">5601</th>
+<td>TRCETEN128F42AD6D0</td>
+<td>SOXSRBF12D021B1340</td>
+<td>AR4KTMS1187B9B4873</td>
+<td>Bowling For Soup</td>
+<td>Here We Go</td>
+<td>Goes To The Movies</td>
+<td>2004</td>
+<td>188.36853</td>
+<td>0.790406</td>
+<td>0.561934</td>
+<td>punk</td>
+<td>pop punk; The Good Stuff; Bowling For Soup; pr...</td>
+<td>374</td>
+<td>92</td>
+<td>98.863542</td>
+<td>0</td>
+<td>1939.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1930</th>
+<td>TRWAMJL128F92D124B</td>
+<td>SOUSJHY12A8C1457F0</td>
+<td>ARQ85IK11C8A415C6A</td>
+<td>Ladyhawke</td>
+<td>Crazy World</td>
+<td>Ladyhawke</td>
+<td>2008</td>
+<td>214.93506</td>
+<td>0.692569</td>
+<td>0.554471</td>
+<td>electronic</td>
+<td>electropop; indie; female vocalists; electroni...</td>
+<td>340</td>
+<td>58</td>
+<td>74.229374</td>
+<td>0</td>
+<td>1680.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6997</th>
+<td>TRLDRZN128F4288F63</td>
+<td>SOBLSVV12A8C13E4F8</td>
+<td>ARLUAK21187B9B785A</td>
+<td>Ziggy Marley And The Melody Makers</td>
+<td>We Propose</td>
+<td>Conscious Party</td>
+<td>0</td>
+<td>274.46812</td>
+<td>0.750480</td>
+<td>0.538491</td>
+<td>reggae</td>
+<td>reggae; marijuana; Reg-i-die</td>
+<td>297</td>
+<td>97</td>
+<td>58.180753</td>
+<td>0</td>
+<td>1656.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3053</th>
+<td>TRTCOWO128F930C444</td>
+<td>SONWWDY12A6D4F7FB1</td>
+<td>ARIHE7O1187FB47DED</td>
+<td>The Streets</td>
+<td>Weak Become Heroes</td>
+<td>Summer Sessions</td>
+<td>0</td>
+<td>494.54975</td>
+<td>0.772909</td>
+<td>0.527872</td>
+<td>hip hop</td>
+<td>british; Hip-Hop; garage; 00s; hip hop</td>
+<td>754</td>
+<td>262</td>
+<td>96.337947</td>
+<td>0</td>
+<td>1654.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2971</th>
+<td>TRPDBLM128E0792367</td>
+<td>SOZRPOY12A8C1455F5</td>
+<td>ARTDQRC1187FB4EFD4</td>
+<td>Black Eyed Peas</td>
+<td>Communication</td>
+<td>Behind The Front</td>
+<td>1998</td>
+<td>344.00608</td>
+<td>0.845602</td>
+<td>1.005942</td>
+<td>hip hop</td>
+<td>Hip-Hop; funk; dance; communication; heisse sc...</td>
+<td>592</td>
+<td>173</td>
+<td>80.068720</td>
+<td>0</td>
+<td>1615.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2874</th>
+<td>TRKRVKD128F9327008</td>
+<td>SOXKVEZ12AB01821F5</td>
+<td>ARX94AN1187FB4B54B</td>
+<td>Hollywood Undead</td>
+<td>Undead</td>
+<td>Desperate Measures</td>
+<td>2008</td>
+<td>288.07791</td>
+<td>0.703476</td>
+<td>0.576626</td>
+<td>hip hop</td>
+<td>rapcore; hollywood undead; rap metal; rock; un...</td>
+<td>831</td>
+<td>222</td>
+<td>97.082439</td>
+<td>0</td>
+<td>1476.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>TRAAPIV128F1493132</td>
+<td>SOJHKYL12A6D4FA0AC</td>
+<td>AR56P361187B9AC4DB</td>
+<td>Gary Moore</td>
+<td>What Are We Here For</td>
+<td>Dark Days In Paradise</td>
+<td>1997</td>
+<td>345.93914</td>
+<td>0.761362</td>
+<td>0.467111</td>
+<td>blues</td>
+<td>blues; classic rock; rock; hard rock; blues rock</td>
+<td>218</td>
+<td>80</td>
+<td>37.376463</td>
+<td>0</td>
+<td>1397.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5840</th>
+<td>TRMGOLR128F933A7DB</td>
+<td>SOYDERO12A6D4F72BC</td>
+<td>ARZWK2R1187B98F09F</td>
+<td>Rise Against</td>
+<td>Survive</td>
+<td>The Sufferer &amp; The Witness</td>
+<td>2006</td>
+<td>221.46567</td>
+<td>0.847082</td>
+<td>0.625080</td>
+<td>punk</td>
+<td>punk rock; melodic hardcore; punk; rock; Rise ...</td>
+<td>324</td>
+<td>85</td>
+<td>56.169387</td>
+<td>0</td>
+<td>1383.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="4e58e7b6" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visual check: long songs can receive larger dot products.</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>top_dot <span class="op">=</span> dot_results.sort_values(<span class="st">"dot"</span>, ascending<span class="op">=</span><span class="va">False</span>).head(<span class="dv">10</span>).copy()</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>top_dot[<span class="st">"label"</span>] <span class="op">=</span> (</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    top_dot[<span class="st">"artist_name"</span>].fillna(<span class="st">""</span>) <span class="op">+</span> <span class="st">" - "</span> <span class="op">+</span> top_dot[<span class="st">"song_title"</span>].fillna(<span class="st">""</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> [<span class="st">"#e76f51"</span> <span class="cf">if</span> index <span class="op">==</span> query_idx <span class="cf">else</span> <span class="st">"#457b9d"</span> <span class="cf">for</span> index <span class="kw">in</span> top_dot.index]</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">5</span>))</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>plt.barh(top_dot[<span class="st">"label"</span>], top_dot[<span class="st">"dot"</span>], color<span class="op">=</span>colors)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> position, words <span class="kw">in</span> <span class="bu">enumerate</span>(top_dot[<span class="st">"n_words"</span>]):</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    plt.text(top_dot[<span class="st">"dot"</span>].iloc[position], position, <span class="ss">f"  </span><span class="sc">{</span>words<span class="sc">:.0f}</span><span class="ss"> lyric words"</span>, va<span class="op">=</span><span class="st">"center"</span>, fontsize<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>plt.gca().invert_yaxis()</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"dot-product score"</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Dot product: overlap and song length both matter"</span>)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab_01_Local_files/figure-html/cell-8-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="alert alert-block alert-warning">
+<p>Look at the top matches. Do they seem similar because they use similar words, because they are genuinely similar songs, or because the dot product is partly rewarding song size?</p>
+<p>Adapt the above code chunks to find the top three <strong>non-self</strong> matches for all of the Top 40 songs by genre using the raw inner product. Before sorting, set the query song’s score to <code>-np.inf</code>. Save your results as additional columns in “./data/top_40_songs_by_genre_results.csv”.</p>
+</div>
+<p>TODO: no, not strong matches. Length big factor.</p>
+<div id="10a853a1" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#pull all genres from 'genre' column in top_40 dataset</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>genres <span class="op">=</span> top_40[<span class="st">'genre'</span>].unique()</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>genres</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>&lt;StringArray&gt;
+[     'blues',  'classical',    'country', 'electronic',       'folk',
+    'hip hop',       'jazz',      'latin',      'metal',        'pop',
+       'punk',   'r&amp;b/soul',     'reggae',       'rock']
+Length: 14, dtype: str</code></pre>
+</div>
+</div>
+<div id="1f637954" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get user input for song index to query</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>query_idx <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>(<span class="ss">f"Enter a song index to query (0-</span><span class="sc">{</span><span class="bu">len</span>(songs)<span class="op">-</span><span class="dv">1</span><span class="sc">}</span><span class="ss">): "</span>))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> X[query_idx]</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># print(query_idx)</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># print(query)</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">#compuye the dot product between every song vector and the query vector.</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>dot_results[<span class="st">'dot'</span>] <span class="op">=</span> X.dot(query)   <span class="co"># replace with your actual similarity calc if it's not a plain dot product</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co"># exclude self from results without removing it from the original dot_results DataFrame</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>results_no_query <span class="op">=</span> dot_results.drop(index<span class="op">=</span>query_idx, errors<span class="op">=</span><span class="st">'ignore'</span>)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="co"># group `dot_results` based on `genres` as a list of genres to filter the top_40 dataset</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_top_songs_by_genre(genre, top_n<span class="op">=</span><span class="dv">3</span>):</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>        results_no_query[results_no_query[<span class="st">'genre'</span>] <span class="op">==</span> genre]</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        .sort_values(<span class="st">"dot"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>        .head(top_n)</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="co"># use get_top_songs_by_genre to get the top 3 songs for each genre in the genres list</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>topThreeSongs <span class="op">=</span> []</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> genre <span class="kw">in</span> genres:</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>    top_songs <span class="op">=</span> get_top_songs_by_genre(genre, top_n<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>    topThreeSongs.append(top_songs)</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>topThreeSongs_df <span class="op">=</span> pd.concat(topThreeSongs)</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>topThreeSongs_df[[<span class="st">'genre'</span>, <span class="st">'artist_name'</span>, <span class="st">'song_title'</span>, <span class="st">'dot'</span>]]</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>    </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[10]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="font-style:italic;color:rgb(95,135,135)"># get user input for song index to query</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> query_idx = int(input(f"Enter a song index to query (0-{len(songs)-<span class="ansi-green-fg">1</span>}): "))
+<span class="ansi-green-fg">      3</span> query = X[query_idx]
+<span class="ansi-green-fg">      4</span> <span style="font-style:italic;color:rgb(95,135,135)"># print(query_idx)</span>
+<span class="ansi-green-fg">      5</span> <span style="font-style:italic;color:rgb(95,135,135)"># print(query)</span>
+
+<span class="ansi-red-fg">ValueError</span>: invalid literal for int() with base 10: ''</pre>
+</div>
+</div>
+</div>
+</section>
+<section id="step-2-centering-and-covariance" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-centering-and-covariance">Step 2: Centering and Covariance</h2>
+<p>Now we subtract each vector’s own mean. This changes the question from “Do these songs use many of the same words?” to something closer to “Do these songs rise above and below their own average on the same words?”</p>
+<div id="ea0987e0" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>query_centered <span class="op">=</span> query <span class="op">-</span> query.mean()</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>X_centered <span class="op">=</span> X <span class="op">-</span> X.mean(axis<span class="op">=</span><span class="dv">1</span>, keepdims<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>centered_dot_scores <span class="op">=</span> X_centered <span class="op">@</span> query_centered</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>covariance_scores <span class="op">=</span> centered_dot_scores <span class="op">/</span> X.shape[<span class="dv">1</span>]</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>cov_results <span class="op">=</span> songs[meta_cols].copy()</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>cov_results[<span class="st">"centered_dot"</span>] <span class="op">=</span> centered_dot_scores</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>cov_results[<span class="st">"covariance"</span>] <span class="op">=</span> covariance_scores</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>cov_results.sort_values(<span class="st">"covariance"</span>, ascending<span class="op">=</span><span class="va">False</span>).head(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">track_id</th>
+<th data-quarto-table-cell-role="th">song_id</th>
+<th data-quarto-table-cell-role="th">artist_id</th>
+<th data-quarto-table-cell-role="th">artist_name</th>
+<th data-quarto-table-cell-role="th">song_title</th>
+<th data-quarto-table-cell-role="th">release</th>
+<th data-quarto-table-cell-role="th">release_year</th>
+<th data-quarto-table-cell-role="th">duration</th>
+<th data-quarto-table-cell-role="th">artist_familiarity</th>
+<th data-quarto-table-cell-role="th">artist_hotttnesss</th>
+<th data-quarto-table-cell-role="th">genre</th>
+<th data-quarto-table-cell-role="th">top_tags</th>
+<th data-quarto-table-cell-role="th">n_words</th>
+<th data-quarto-table-cell-role="th">nnz_words</th>
+<th data-quarto-table-cell-role="th">l2_norm</th>
+<th data-quarto-table-cell-role="th">is_test</th>
+<th data-quarto-table-cell-role="th">centered_dot</th>
+<th data-quarto-table-cell-role="th">covariance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">1582</th>
+<td>TRFSCLD12903CD213F</td>
+<td>SOENGNL12AB018E1BD</td>
+<td>AR4L4WQ1187FB51996</td>
+<td>The Prodigy</td>
+<td>We Gonna Rock</td>
+<td>What Evil Lurks</td>
+<td>1991</td>
+<td>282.30485</td>
+<td>0.638614</td>
+<td>0.601436</td>
+<td>electronic</td>
+<td>Rave; big beat; jungle; electronic; techno</td>
+<td>312</td>
+<td>10</td>
+<td>141.703917</td>
+<td>0</td>
+<td>2064.18000</td>
+<td>2.580225</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5601</th>
+<td>TRCETEN128F42AD6D0</td>
+<td>SOXSRBF12D021B1340</td>
+<td>AR4KTMS1187B9B4873</td>
+<td>Bowling For Soup</td>
+<td>Here We Go</td>
+<td>Goes To The Movies</td>
+<td>2004</td>
+<td>188.36853</td>
+<td>0.790406</td>
+<td>0.561934</td>
+<td>punk</td>
+<td>pop punk; The Good Stuff; Bowling For Soup; pr...</td>
+<td>374</td>
+<td>92</td>
+<td>98.863542</td>
+<td>0</td>
+<td>1856.78500</td>
+<td>2.320981</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6290</th>
+<td>TRFUJVJ128F426F2A2</td>
+<td>SOONCPO12AF72A1986</td>
+<td>AR8W8P31187B9A4063</td>
+<td>Lauryn Hill</td>
+<td>Interlude 5</td>
+<td>MTV Unplugged No. 2.0</td>
+<td>2002</td>
+<td>734.48444</td>
+<td>0.697206</td>
+<td>0.580125</td>
+<td>r&amp;b/soul</td>
+<td>ms hill; the realness; The Truth; true; rnb</td>
+<td>1903</td>
+<td>409</td>
+<td>215.044182</td>
+<td>0</td>
+<td>1767.24000</td>
+<td>2.209050</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1930</th>
+<td>TRWAMJL128F92D124B</td>
+<td>SOUSJHY12A8C1457F0</td>
+<td>ARQ85IK11C8A415C6A</td>
+<td>Ladyhawke</td>
+<td>Crazy World</td>
+<td>Ladyhawke</td>
+<td>2008</td>
+<td>214.93506</td>
+<td>0.692569</td>
+<td>0.554471</td>
+<td>electronic</td>
+<td>electropop; indie; female vocalists; electroni...</td>
+<td>340</td>
+<td>58</td>
+<td>74.229374</td>
+<td>0</td>
+<td>1617.63000</td>
+<td>2.022038</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6997</th>
+<td>TRLDRZN128F4288F63</td>
+<td>SOBLSVV12A8C13E4F8</td>
+<td>ARLUAK21187B9B785A</td>
+<td>Ziggy Marley And The Melody Makers</td>
+<td>We Propose</td>
+<td>Conscious Party</td>
+<td>0</td>
+<td>274.46812</td>
+<td>0.750480</td>
+<td>0.538491</td>
+<td>reggae</td>
+<td>reggae; marijuana; Reg-i-die</td>
+<td>297</td>
+<td>97</td>
+<td>58.180753</td>
+<td>0</td>
+<td>1599.53625</td>
+<td>1.999420</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3053</th>
+<td>TRTCOWO128F930C444</td>
+<td>SONWWDY12A6D4F7FB1</td>
+<td>ARIHE7O1187FB47DED</td>
+<td>The Streets</td>
+<td>Weak Become Heroes</td>
+<td>Summer Sessions</td>
+<td>0</td>
+<td>494.54975</td>
+<td>0.772909</td>
+<td>0.527872</td>
+<td>hip hop</td>
+<td>british; Hip-Hop; garage; 00s; hip hop</td>
+<td>754</td>
+<td>262</td>
+<td>96.337947</td>
+<td>0</td>
+<td>1516.73875</td>
+<td>1.895923</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2971</th>
+<td>TRPDBLM128E0792367</td>
+<td>SOZRPOY12A8C1455F5</td>
+<td>ARTDQRC1187FB4EFD4</td>
+<td>Black Eyed Peas</td>
+<td>Communication</td>
+<td>Behind The Front</td>
+<td>1998</td>
+<td>344.00608</td>
+<td>0.845602</td>
+<td>1.005942</td>
+<td>hip hop</td>
+<td>Hip-Hop; funk; dance; communication; heisse sc...</td>
+<td>592</td>
+<td>173</td>
+<td>80.068720</td>
+<td>0</td>
+<td>1510.34125</td>
+<td>1.887927</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">0</th>
+<td>TRAAPIV128F1493132</td>
+<td>SOJHKYL12A6D4FA0AC</td>
+<td>AR56P361187B9AC4DB</td>
+<td>Gary Moore</td>
+<td>What Are We Here For</td>
+<td>Dark Days In Paradise</td>
+<td>1997</td>
+<td>345.93914</td>
+<td>0.761362</td>
+<td>0.467111</td>
+<td>blues</td>
+<td>blues; classic rock; rock; hard rock; blues rock</td>
+<td>218</td>
+<td>80</td>
+<td>37.376463</td>
+<td>0</td>
+<td>1352.34875</td>
+<td>1.690436</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">5840</th>
+<td>TRMGOLR128F933A7DB</td>
+<td>SOYDERO12A6D4F72BC</td>
+<td>ARZWK2R1187B98F09F</td>
+<td>Rise Against</td>
+<td>Survive</td>
+<td>The Sufferer &amp; The Witness</td>
+<td>2006</td>
+<td>221.46567</td>
+<td>0.847082</td>
+<td>0.625080</td>
+<td>punk</td>
+<td>punk rock; melodic hardcore; punk; rock; Rise ...</td>
+<td>324</td>
+<td>85</td>
+<td>56.169387</td>
+<td>0</td>
+<td>1313.77875</td>
+<td>1.642223</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2874</th>
+<td>TRKRVKD128F9327008</td>
+<td>SOXKVEZ12AB01821F5</td>
+<td>ARX94AN1187FB4B54B</td>
+<td>Hollywood Undead</td>
+<td>Undead</td>
+<td>Desperate Measures</td>
+<td>2008</td>
+<td>288.07791</td>
+<td>0.703476</td>
+<td>0.576626</td>
+<td>hip hop</td>
+<td>rapcore; hollywood undead; rap metal; rock; un...</td>
+<td>831</td>
+<td>222</td>
+<td>97.082439</td>
+<td>0</td>
+<td>1312.27875</td>
+<td>1.640348</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="ece4d11e" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visual check: centering moves each song's average word count to zero.</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>comparison_idx <span class="op">=</span> np.argsort(covariance_scores)[<span class="op">-</span><span class="dv">2</span>]</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>comparison <span class="op">=</span> X[comparison_idx]</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>used_words <span class="op">=</span> (query <span class="op">&gt;</span> <span class="dv">0</span>) <span class="op">|</span> (comparison <span class="op">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>both_above_average <span class="op">=</span> (query <span class="op">&gt;</span> query.mean()) <span class="op">&amp;</span> (comparison <span class="op">&gt;</span> comparison.mean())</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">6</span>))</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>plt.scatter(query[used_words], comparison[used_words],</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>            c<span class="op">=</span>np.where(both_above_average[used_words], <span class="st">"#e76f51"</span>, <span class="st">"#457b9d"</span>), alpha<span class="op">=</span><span class="fl">0.65</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>plt.axvline(query.mean(), color<span class="op">=</span><span class="st">"#555555"</span>, linestyle<span class="op">=</span><span class="st">"--"</span>, label<span class="op">=</span><span class="st">"query mean"</span>)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>plt.axhline(comparison.mean(), color<span class="op">=</span><span class="st">"#555555"</span>, linestyle<span class="op">=</span><span class="st">":"</span>, label<span class="op">=</span><span class="st">"match mean"</span>)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"query word count"</span>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"matching song word count"</span>)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Covariance rewards words above both songs' averages"</span>)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab_01_Local_files/figure-html/cell-12-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="alert alert-block alert-warning">
+<p>Compare the rankings from dot product and covariance. What changed? Why does subtracting the mean change the notion of similarity?</p>
+<p>Adapt the above code chunks to find the top three <strong>non-self</strong> matches for all of the Top 40 songs by genre using the centered inner product. Before sorting, set the query song’s score to <code>-np.inf</code>. Save your results as additional columns in “./data/top_40_songs_by_genre_results.csv”.</p>
+</div>
+<div id="dc24b310" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get user input for song index to query</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>query_idx <span class="op">=</span> <span class="bu">int</span>(<span class="bu">input</span>(<span class="ss">f"Enter a song index to query (0-</span><span class="sc">{</span><span class="bu">len</span>(songs)<span class="op">-</span><span class="dv">1</span><span class="sc">}</span><span class="ss">): "</span>))</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> X[query_idx]</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># print(query_idx)</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># print(query)</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co">#compuye the dot product between every song vector and the query vector.</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>dot_results[<span class="st">'dot'</span>] <span class="op">=</span> X.dot(query)   <span class="co"># replace with your actual similarity calc if it's not a plain dot product</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co"># exclude self from results without removing it from the original dot_results DataFrame</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>results_no_query <span class="op">=</span> dot_results.drop(index<span class="op">=</span>query_idx, errors<span class="op">=</span><span class="st">'ignore'</span>)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co"># group `dot_results` based on `genres` as a list of genres to filter the top_40 dataset</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_top_songs_by_genre(genre, top_n<span class="op">=</span><span class="dv">3</span>):</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>        results_no_query[results_no_query[<span class="st">'genre'</span>] <span class="op">==</span> genre]</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>        .sort_values(<span class="st">"dot"</span>, ascending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>        .head(top_n)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="co"># use get_top_songs_by_genre to get the top 3 songs for each genre in the genres list</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>topThreeSongs <span class="op">=</span> []</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> genre <span class="kw">in</span> genres:</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>    top_songs <span class="op">=</span> get_top_songs_by_genre(genre, top_n<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>    topThreeSongs.append(top_songs)</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>topThreeSongs_df <span class="op">=</span> pd.concat(topThreeSongs)</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>topThreeSongs_df[[<span class="st">'genre'</span>, <span class="st">'artist_name'</span>, <span class="st">'song_title'</span>, <span class="st">'dot'</span>]]</span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>    </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="step-3-correlation" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-correlation">Step 3: Correlation</h2>
+<p>Correlation takes covariance and rescales by each vector’s standard deviation. That means we now compare shared pattern after accounting for both average level and spread.</p>
+<div id="316baaf1" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>query_std <span class="op">=</span> query.std()</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>X_std <span class="op">=</span> X.std(axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>denom <span class="op">=</span> X_std <span class="op">*</span> query_std</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>corr_scores <span class="op">=</span> np.divide(</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    covariance_scores,</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    denom,</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    out<span class="op">=</span>np.zeros_like(covariance_scores),</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    where<span class="op">=</span>denom <span class="op">!=</span> <span class="dv">0</span>,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>corr_results <span class="op">=</span> songs[meta_cols].copy()</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>corr_results[<span class="st">"correlation"</span>] <span class="op">=</span> corr_scores</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>corr_results.sort_values(<span class="st">"correlation"</span>, ascending<span class="op">=</span><span class="va">False</span>).head(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">track_id</th>
+<th data-quarto-table-cell-role="th">song_id</th>
+<th data-quarto-table-cell-role="th">artist_id</th>
+<th data-quarto-table-cell-role="th">artist_name</th>
+<th data-quarto-table-cell-role="th">song_title</th>
+<th data-quarto-table-cell-role="th">release</th>
+<th data-quarto-table-cell-role="th">release_year</th>
+<th data-quarto-table-cell-role="th">duration</th>
+<th data-quarto-table-cell-role="th">artist_familiarity</th>
+<th data-quarto-table-cell-role="th">artist_hotttnesss</th>
+<th data-quarto-table-cell-role="th">genre</th>
+<th data-quarto-table-cell-role="th">top_tags</th>
+<th data-quarto-table-cell-role="th">n_words</th>
+<th data-quarto-table-cell-role="th">nnz_words</th>
+<th data-quarto-table-cell-role="th">l2_norm</th>
+<th data-quarto-table-cell-role="th">is_test</th>
+<th data-quarto-table-cell-role="th">correlation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>TRAAPIV128F1493132</td>
+<td>SOJHKYL12A6D4FA0AC</td>
+<td>AR56P361187B9AC4DB</td>
+<td>Gary Moore</td>
+<td>What Are We Here For</td>
+<td>Dark Days In Paradise</td>
+<td>1997</td>
+<td>345.93914</td>
+<td>0.761362</td>
+<td>0.467111</td>
+<td>blues</td>
+<td>blues; classic rock; rock; hard rock; blues rock</td>
+<td>218</td>
+<td>80</td>
+<td>37.376463</td>
+<td>0</td>
+<td>1.000000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">6997</th>
+<td>TRLDRZN128F4288F63</td>
+<td>SOBLSVV12A8C13E4F8</td>
+<td>ARLUAK21187B9B785A</td>
+<td>Ziggy Marley And The Melody Makers</td>
+<td>We Propose</td>
+<td>Conscious Party</td>
+<td>0</td>
+<td>274.46812</td>
+<td>0.750480</td>
+<td>0.538491</td>
+<td>reggae</td>
+<td>reggae; marijuana; Reg-i-die</td>
+<td>297</td>
+<td>97</td>
+<td>58.180753</td>
+<td>0</td>
+<td>0.755614</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4677</th>
+<td>TROCPYO128F92F9ADC</td>
+<td>SOVVPIM12AF72A33E8</td>
+<td>AR6097P1187B998E3E</td>
+<td>Modern Life Is War</td>
+<td>Destination: Death or Better Days</td>
+<td>My Love My Way</td>
+<td>2006</td>
+<td>148.29669</td>
+<td>0.647507</td>
+<td>0.480729</td>
+<td>metal</td>
+<td>metalcore; addicting; fury music</td>
+<td>204</td>
+<td>112</td>
+<td>28.301943</td>
+<td>0</td>
+<td>0.746012</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4933</th>
+<td>TRYTJTL128F92D1345</td>
+<td>SOWNBCM12A8C141160</td>
+<td>ARWDDHA1187FB3A745</td>
+<td>EDGUY</td>
+<td>Superheroes</td>
+<td>Fucking With Fire - Live</td>
+<td>2005</td>
+<td>242.54649</td>
+<td>0.722370</td>
+<td>0.526279</td>
+<td>metal</td>
+<td>Power metal; metal; heavy metal; edguy; melodi...</td>
+<td>191</td>
+<td>75</td>
+<td>39.268308</td>
+<td>0</td>
+<td>0.728089</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4521</th>
+<td>TRHYEBV12903CE8274</td>
+<td>SOHVDHF12AC4685D1D</td>
+<td>ARBC4CV1187B9A7823</td>
+<td>Lifetime</td>
+<td>Daneurysm</td>
+<td>Hello Bastards</td>
+<td>1995</td>
+<td>71.15710</td>
+<td>0.714125</td>
+<td>0.539633</td>
+<td>metal</td>
+<td>hardcore; energy; fast; punk; free download</td>
+<td>68</td>
+<td>32</td>
+<td>14.456832</td>
+<td>0</td>
+<td>0.698025</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4489</th>
+<td>TRGPMNN128F428B362</td>
+<td>SOSAYAA12A8C1393FA</td>
+<td>AR6RSHA1187FB3F03F</td>
+<td>Raised Fist</td>
+<td>Soldiers Of Today</td>
+<td>Watch Your Step</td>
+<td>1996</td>
+<td>152.63302</td>
+<td>0.694461</td>
+<td>0.457958</td>
+<td>metal</td>
+<td>hardcore punk</td>
+<td>222</td>
+<td>95</td>
+<td>28.478062</td>
+<td>0</td>
+<td>0.696568</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4550</th>
+<td>TRJDFLG128F934B261</td>
+<td>SOSLMFL12A8C130DC5</td>
+<td>ARK358A1187B9ADDC0</td>
+<td>Tourniquet</td>
+<td>Convoluted Absolutes</td>
+<td>Where Moth And Rust Destroy</td>
+<td>2003</td>
+<td>337.03138</td>
+<td>0.584310</td>
+<td>0.398297</td>
+<td>metal</td>
+<td>metal; Power metal; Progressive metal; heavy m...</td>
+<td>189</td>
+<td>92</td>
+<td>23.194827</td>
+<td>0</td>
+<td>0.684930</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5831</th>
+<td>TRLZCAQ128F424D4E4</td>
+<td>SOYNGQB12A6D4FD387</td>
+<td>AR01SCU1187B9A693C</td>
+<td>Street Dogs</td>
+<td>Free</td>
+<td>State of Grace</td>
+<td>2008</td>
+<td>219.87220</td>
+<td>0.683245</td>
+<td>0.486471</td>
+<td>punk</td>
+<td>irish; Ballad; celtic punk; candidate</td>
+<td>291</td>
+<td>121</td>
+<td>37.349699</td>
+<td>0</td>
+<td>0.684267</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4896</th>
+<td>TRXAMNT12903CF43BE</td>
+<td>SOSHOZQ12AB017C3B2</td>
+<td>ARVXKTV1187FB44139</td>
+<td>Arsonists Get All The Girls</td>
+<td>Tourtasia</td>
+<td>The Game Of Life</td>
+<td>2007</td>
+<td>227.42159</td>
+<td>0.725403</td>
+<td>0.454957</td>
+<td>metal</td>
+<td>deathcore; experimental; grindcore; mathcore; ...</td>
+<td>195</td>
+<td>118</td>
+<td>22.847319</td>
+<td>0</td>
+<td>0.679579</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5184</th>
+<td>TRJOQXR128F92EB51A</td>
+<td>SOXKDWF12AB017BF6F</td>
+<td>ARWSN471187B9A6F7F</td>
+<td>Thompson Twins</td>
+<td>We Are Detective</td>
+<td>Quick Step And Side Kick</td>
+<td>1983</td>
+<td>182.98730</td>
+<td>0.648702</td>
+<td>0.441576</td>
+<td>pop</td>
+<td>80s; new wave; pop; 1980s; alternative</td>
+<td>172</td>
+<td>91</td>
+<td>28.035692</td>
+<td>0</td>
+<td>0.678728</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="3558825a" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visual check: correlation rescales covariance by each song's spread.</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">5</span>))</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(covariance_scores, corr_scores, s<span class="op">=</span><span class="dv">10</span>, alpha<span class="op">=</span><span class="fl">0.25</span>, color<span class="op">=</span><span class="st">"#457b9d"</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>plt.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"#555555"</span>, linewidth<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>plt.axvline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"#555555"</span>, linewidth<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>plt.scatter(covariance_scores[query_idx], corr_scores[query_idx], color<span class="op">=</span><span class="st">"#e76f51"</span>, s<span class="op">=</span><span class="dv">45</span>, label<span class="op">=</span><span class="st">"query song"</span>)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"covariance with query"</span>)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"correlation with query"</span>)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Correlation changes the scale, and sometimes the ranking"</span>)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab_01_Local_files/figure-html/cell-15-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="alert alert-block alert-warning">
+<p>Correlation and covariance are related, but not identical. What kind of song might move up in the ranking after standardization? What kind might move down?</p>
+<p>Adapt the above code chunks to find the top three <strong>non-self</strong> matches for all of the Top 40 songs by genre using the correlation. Before sorting, set the query song’s score to <code>-np.inf</code>. Save your results as additional columns in “./data/top_40_songs_by_genre_results.csv”.</p>
+</div>
+</section>
+<section id="step-4-cosine-similarity" class="level2">
+<h2 class="anchored" data-anchor-id="step-4-cosine-similarity">Step 4: Cosine Similarity</h2>
+<p>Cosine similarity compares the raw vectors without centering around their means:</p>
+<p><span class="math display">\[
+\cos(\theta) = \frac{x \cdot y}{\|x\|\|y\|}
+\]</span></p>
+<p>In retrieval systems, this is often a better measure of content similarity than the raw dot product.</p>
+<div id="179a79f2" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cosine_scores(matrix, query_vector):</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    numerators <span class="op">=</span> matrix <span class="op">@</span> query_vector</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    matrix_norms <span class="op">=</span> np.linalg.norm(matrix, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    query_norm <span class="op">=</span> np.linalg.norm(query_vector)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    denominators <span class="op">=</span> matrix_norms <span class="op">*</span> query_norm</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.divide(</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>        numerators,</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>        denominators,</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>        out<span class="op">=</span>np.zeros_like(numerators),</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>        where<span class="op">=</span>denominators <span class="op">!=</span> <span class="dv">0</span>,</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>cos_scores <span class="op">=</span> cosine_scores(X, query)</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>cosine_results <span class="op">=</span> songs[meta_cols].copy()</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>cosine_results[<span class="st">"cosine"</span>] <span class="op">=</span> cos_scores</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>cosine_results.sort_values(<span class="st">"cosine"</span>, ascending<span class="op">=</span><span class="va">False</span>).head(<span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">track_id</th>
+<th data-quarto-table-cell-role="th">song_id</th>
+<th data-quarto-table-cell-role="th">artist_id</th>
+<th data-quarto-table-cell-role="th">artist_name</th>
+<th data-quarto-table-cell-role="th">song_title</th>
+<th data-quarto-table-cell-role="th">release</th>
+<th data-quarto-table-cell-role="th">release_year</th>
+<th data-quarto-table-cell-role="th">duration</th>
+<th data-quarto-table-cell-role="th">artist_familiarity</th>
+<th data-quarto-table-cell-role="th">artist_hotttnesss</th>
+<th data-quarto-table-cell-role="th">genre</th>
+<th data-quarto-table-cell-role="th">top_tags</th>
+<th data-quarto-table-cell-role="th">n_words</th>
+<th data-quarto-table-cell-role="th">nnz_words</th>
+<th data-quarto-table-cell-role="th">l2_norm</th>
+<th data-quarto-table-cell-role="th">is_test</th>
+<th data-quarto-table-cell-role="th">cosine</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>TRAAPIV128F1493132</td>
+<td>SOJHKYL12A6D4FA0AC</td>
+<td>AR56P361187B9AC4DB</td>
+<td>Gary Moore</td>
+<td>What Are We Here For</td>
+<td>Dark Days In Paradise</td>
+<td>1997</td>
+<td>345.93914</td>
+<td>0.761362</td>
+<td>0.467111</td>
+<td>blues</td>
+<td>blues; classic rock; rock; hard rock; blues rock</td>
+<td>218</td>
+<td>80</td>
+<td>37.376463</td>
+<td>0</td>
+<td>1.000000</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">6997</th>
+<td>TRLDRZN128F4288F63</td>
+<td>SOBLSVV12A8C13E4F8</td>
+<td>ARLUAK21187B9B785A</td>
+<td>Ziggy Marley And The Melody Makers</td>
+<td>We Propose</td>
+<td>Conscious Party</td>
+<td>0</td>
+<td>274.46812</td>
+<td>0.750480</td>
+<td>0.538491</td>
+<td>reggae</td>
+<td>reggae; marijuana; Reg-i-die</td>
+<td>297</td>
+<td>97</td>
+<td>58.180753</td>
+<td>0</td>
+<td>0.761523</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4677</th>
+<td>TROCPYO128F92F9ADC</td>
+<td>SOVVPIM12AF72A33E8</td>
+<td>AR6097P1187B998E3E</td>
+<td>Modern Life Is War</td>
+<td>Destination: Death or Better Days</td>
+<td>My Love My Way</td>
+<td>2006</td>
+<td>148.29669</td>
+<td>0.647507</td>
+<td>0.480729</td>
+<td>metal</td>
+<td>metalcore; addicting; fury music</td>
+<td>204</td>
+<td>112</td>
+<td>28.301943</td>
+<td>0</td>
+<td>0.755322</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4933</th>
+<td>TRYTJTL128F92D1345</td>
+<td>SOWNBCM12A8C141160</td>
+<td>ARWDDHA1187FB3A745</td>
+<td>EDGUY</td>
+<td>Superheroes</td>
+<td>Fucking With Fire - Live</td>
+<td>2005</td>
+<td>242.54649</td>
+<td>0.722370</td>
+<td>0.526279</td>
+<td>metal</td>
+<td>Power metal; metal; heavy metal; edguy; melodi...</td>
+<td>191</td>
+<td>75</td>
+<td>39.268308</td>
+<td>0</td>
+<td>0.735159</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4489</th>
+<td>TRGPMNN128F428B362</td>
+<td>SOSAYAA12A8C1393FA</td>
+<td>AR6RSHA1187FB3F03F</td>
+<td>Raised Fist</td>
+<td>Soldiers Of Today</td>
+<td>Watch Your Step</td>
+<td>1996</td>
+<td>152.63302</td>
+<td>0.694461</td>
+<td>0.457958</td>
+<td>metal</td>
+<td>hardcore punk</td>
+<td>222</td>
+<td>95</td>
+<td>28.478062</td>
+<td>0</td>
+<td>0.707435</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4521</th>
+<td>TRHYEBV12903CE8274</td>
+<td>SOHVDHF12AC4685D1D</td>
+<td>ARBC4CV1187B9A7823</td>
+<td>Lifetime</td>
+<td>Daneurysm</td>
+<td>Hello Bastards</td>
+<td>1995</td>
+<td>71.15710</td>
+<td>0.714125</td>
+<td>0.539633</td>
+<td>metal</td>
+<td>hardcore; energy; fast; punk; free download</td>
+<td>68</td>
+<td>32</td>
+<td>14.456832</td>
+<td>0</td>
+<td>0.703254</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4550</th>
+<td>TRJDFLG128F934B261</td>
+<td>SOSLMFL12A8C130DC5</td>
+<td>ARK358A1187B9ADDC0</td>
+<td>Tourniquet</td>
+<td>Convoluted Absolutes</td>
+<td>Where Moth And Rust Destroy</td>
+<td>2003</td>
+<td>337.03138</td>
+<td>0.584310</td>
+<td>0.398297</td>
+<td>metal</td>
+<td>metal; Power metal; Progressive metal; heavy m...</td>
+<td>189</td>
+<td>92</td>
+<td>23.194827</td>
+<td>0</td>
+<td>0.696703</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5831</th>
+<td>TRLZCAQ128F424D4E4</td>
+<td>SOYNGQB12A6D4FD387</td>
+<td>AR01SCU1187B9A693C</td>
+<td>Street Dogs</td>
+<td>Free</td>
+<td>State of Grace</td>
+<td>2008</td>
+<td>219.87220</td>
+<td>0.683245</td>
+<td>0.486471</td>
+<td>punk</td>
+<td>irish; Ballad; celtic punk; candidate</td>
+<td>291</td>
+<td>121</td>
+<td>37.349699</td>
+<td>0</td>
+<td>0.696275</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4896</th>
+<td>TRXAMNT12903CF43BE</td>
+<td>SOSHOZQ12AB017C3B2</td>
+<td>ARVXKTV1187FB44139</td>
+<td>Arsonists Get All The Girls</td>
+<td>Tourtasia</td>
+<td>The Game Of Life</td>
+<td>2007</td>
+<td>227.42159</td>
+<td>0.725403</td>
+<td>0.454957</td>
+<td>metal</td>
+<td>deathcore; experimental; grindcore; mathcore; ...</td>
+<td>195</td>
+<td>118</td>
+<td>22.847319</td>
+<td>0</td>
+<td>0.692076</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5184</th>
+<td>TRJOQXR128F92EB51A</td>
+<td>SOXKDWF12AB017BF6F</td>
+<td>ARWSN471187B9A6F7F</td>
+<td>Thompson Twins</td>
+<td>We Are Detective</td>
+<td>Quick Step And Side Kick</td>
+<td>1983</td>
+<td>182.98730</td>
+<td>0.648702</td>
+<td>0.441576</td>
+<td>pop</td>
+<td>80s; new wave; pop; 1980s; alternative</td>
+<td>172</td>
+<td>91</td>
+<td>28.035692</td>
+<td>0</td>
+<td>0.689013</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="alert alert-block alert-warning">
+<p>Compare the dot-product ranking to the cosine-similarity ranking. Which one seems more like a “similar songs” engine and which one seems more like a “shares lots of raw word mass” engine?</p>
+<p>Adapt the above code chunks to find the top three <strong>non-self</strong> matches for all of the Top 40 songs by genre using cosine similarity. Before sorting, set the query song’s score to <code>-np.inf</code>. Save your results as another column in “./data/top_40_songs_by_genre_results.csv”.</p>
+</div>
+<div class="alert alert-block alert-warning">
+<p>For the Top 40 songs, do you notice any patterns across the inner product, correlation, and cosine similarity top three recommendations you provided? Is there significant agreement, or do the recommendations change significantly by method?</p>
+<p>Which methods are most in agreement?</p>
+<p>Which methods do you think give the best results?</p>
+</div>
+</section>
+<section id="step-5" class="level2">
+<h2 class="anchored" data-anchor-id="step-5">Step 5:</h2>
+<p>Some words are “outliers”: They appear in many songs with overwhelming frequency. For example, “love” is a common word in songs. That will boost the inner product significantly. Conversely, rare words like “amortization” or “zebra” might be rare and important for matching, but receive the same weight as a generic word like “about”.</p>
+<p>There is a useful technology to deal with this. We’re going to cover one way of implementing it.</p>
+<ul>
+<li>Step 1: Compute the <strong>term frequency</strong> of each song-word pair, by taking <span class="math inline">\(\log(1+x_{song,word})\)</span>. This is a matrix, <span class="math inline">\(TF\)</span>. This transformation reduces the marginal importance of common words.</li>
+<li>Step 2: Compute the <strong>inverse document frequency</strong> of each word. Let <span class="math inline">\(N\)</span> be the number of documents. Let <span class="math inline">\(df_w\)</span> be the document frequency of word <span class="math inline">\(w\)</span>, the num of documents in which word <span class="math inline">\(w\)</span> appears. Then <span class="math inline">\(IDF_w = \log( N / df_w)\)</span>.</li>
+</ul>
+<p>The <strong>TF-IDF</strong> matrix reweights the <span class="math inline">\(TF\)</span> matrix by the <span class="math inline">\(IDF\)</span> vector: <span class="math inline">\(TFIDF = TF    imes IDF\)</span>. This transformed matrix is then used for retrieval calculations (raw inner product, centered inner product, correlation, cosine similarity), instead of the raw word counts.</p>
+<div id="6d73cda3" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Term frequency: repeated uses of one word count less and less.</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>TF <span class="op">=</span> np.log1p(X) <span class="co"># Compute TF</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Document frequency: how many songs use each word at least once.</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> X.shape[<span class="dv">0</span>] <span class="co"># Determine number of documents</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> (X <span class="op">&gt;</span> <span class="dv">0</span>).<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">0</span>) <span class="co"># Compute document frequency</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>IDF <span class="op">=</span> np.log(N <span class="op">/</span> df) <span class="co"># Compute IDF</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="co"># IDF is one number per word, so NumPy broadcasts it across every song row.</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>TFIDF <span class="op">=</span> TF <span class="op">*</span> IDF</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.DataFrame({</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"word"</span>: word_cols,</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"document_frequency"</span>: df,</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"idf"</span>: IDF,</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>}).sort_values(<span class="st">"idf"</span>, ascending<span class="op">=</span><span class="va">True</span>).head(<span class="dv">10</span>))</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>( pd.DataFrame({</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"word"</span>: word_cols,</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"document_frequency"</span>: df,</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"idf"</span>: IDF,</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>}).sort_values(<span class="st">"idf"</span>, ascending<span class="op">=</span><span class="va">False</span>).head(<span class="dv">10</span>) )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     word  document_frequency       idf
+324     i                5966  0.293365
+22    and                5960  0.294371
+795   you                5671  0.344076
+409    me                5420  0.389346
+331    in                5345  0.403280
+334    is                5191  0.432515
+336    it                5045  0.461044
+466   not                4961  0.477834
+475    of                4785  0.513956
+662  that                4597  0.554038
+     word  document_frequency       idf
+176   doo                  26  5.729100
+258  funk                  48  5.115996
+726   ven                  56  4.961845
+327   ihr                  59  4.909659
+770   wir                  60  4.892852
+201    er                  63  4.844062
+711     u                  66  4.797542
+162  dich                  68  4.767689
+596   sie                  78  4.630488
+208    eu                  81  4.592748</code></pre>
+</div>
+</div>
+<div class="alert alert-block alert-warning">
+<p>Do you notice any patterns among the lowest and highest IDF words?</p>
+<p>Rerun your results from the previous steps to use raw inner product, centered inner product, correlation, and cosine similarity to generate new top 3 <strong>non-self</strong> recommendations for the top 40 songs.</p>
+<p>How do the new TF-IDF-based recommendations compare to one another and the original recommendations?</p>
+</div>
+</section>
+<section id="part-2-evaluate-a-genre-retrieval-system" class="level2">
+<h2 class="anchored" data-anchor-id="part-2-evaluate-a-genre-retrieval-system">Part 2: Evaluate a Genre Retrieval System</h2>
+<p>To engineer a system, we need a ground truth for success or failure. In practice, we would have experts label a dataset or observe user responses and infer success or failure (success might mean they continue their session and click on one of our recommendations, and failure means their session continues but they search for new songs on their own). In the absence of a ground truth, we can use the song genre.</p>
+<p>So your job is:</p>
+<ol type="1">
+<li>For every Top-40 query song, remove the query song itself and every song by the same artist before selecting the top three recommendations for raw inner product, cosine similarity, and TF-IDF-based cosine similarity. If a recommendation’s genre matches the query song’s genre, record a hit (<code>True</code>); otherwise record a miss (<code>False</code>). Report <code>hits.mean()</code>: this is mean <strong>precision@3</strong>, the share of all recommendation slots that are same-genre hits. Do not hard-code the denominator.</li>
+<li>Using the ideas from step 1, try to engineer a system that outperforms the available baselines. What matters is your explanation for why you designed the system you did, not whether or not it outperforms the baselines.</li>
+<li>Write up your results in a separate text file, as a report on your work as a data engineer. Do the existing options work well, or did you find ways to outperform it?</li>
+</ol>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
