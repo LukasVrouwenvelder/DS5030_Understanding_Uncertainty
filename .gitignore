@@ -1,2 +1,7 @@
 .venv
 .ipynb_checkpoints/
+/data
+1_wrangling_and_eda/data
+2_vectors_and_matrices/data
+3_probability/Thursday_lab/data
+4_categorical_and_numeric/data
